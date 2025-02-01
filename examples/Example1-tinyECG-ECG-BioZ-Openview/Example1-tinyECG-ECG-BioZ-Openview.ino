@@ -7,17 +7,17 @@
 //
 //    Arduino connections:
 //
-//  |MAX30001 pin label| Pin Function         |Arduino Connection|
-//  |----------------- |:--------------------:|-----------------:|
-//  | MISO             | Slave Out            |  D12             |
-//  | MOSI             | Slave In             |  D11             |
-//  | SCLK             | Serial Clock         |  D13             |
-//  | CS               | Chip Select          |  D20              |
-//  | VCC              | Digital VDD          |  +5V             |
-//  | GND              | Digital Gnd          |  Gnd             |
-//  | FCLK             | 32K CLOCK            |  -               |
-//  | INT1             | Interrupt1           |  02              |
-//  | INT2             | Interrupt2           |  -               |
+//  |Tiny ECG pin label| Pin Function         |Adafruit QT PY ESP32-C3 Connection|
+//  |----------------- |:--------------------:|---------------------------------:|
+//  | MISO             | Slave Out            |  MISO                            |
+//  | MOSI             | Slave In             |  MOSI                            |
+//  | SCLK             | Serial Clock         |  SCK                             |
+//  | CS               | Chip Select          |  6                               |
+//  | 3V3              | Digital VDD          |  3V                              |
+//  | GND              | Digital Gnd          |  Gnd                             | 
+//  | FCLK             | 32K CLOCK            |  -                               |
+//  | INTB             | Interrupt1           |  A0                              | 
+//  | INT2B            | Interrupt2           |  -                               | 
 //
 //    This software is licensed under the MIT License(http://opensource.org/licenses/MIT).
 //
@@ -34,26 +34,15 @@
 #include <SPI.h>
 #include "protocentral_max30001.h"
 
-#define MAX30001_CS_PIN 20
-#define MAX30001_DELAY_SAMPLES 8 // Time between consecutive samples
-
-#define CES_CMDIF_PKT_START_1 0x0A
-#define CES_CMDIF_PKT_START_2 0xFA
-#define CES_CMDIF_TYPE_DATA 0x02
-#define CES_CMDIF_PKT_STOP 0x0B
-#define DATA_LEN 0x0C
-#define ZERO 0
-
 volatile char DataPacket[DATA_LEN];
 const char DataPacketFooter[2] = {ZERO, CES_CMDIF_PKT_STOP};
 const char DataPacketHeader[5] = {CES_CMDIF_PKT_START_1, CES_CMDIF_PKT_START_2, DATA_LEN, ZERO, CES_CMDIF_TYPE_DATA};
 
-uint8_t data_len = 0x0C;
-
-MAX30001 max30001(MAX30001_CS_PIN);
-
 signed long ecg_data;
 signed long bioz_data;
+bool BioZSkipSample = false;
+
+MAX30001 max30001(MAX30001_CS_PIN);
 
 void sendData(signed long ecg_sample, signed long bioz_sample, bool _bioZSkipSample)
 {
@@ -100,17 +89,12 @@ void sendData(signed long ecg_sample, signed long bioz_sample, bool _bioZSkipSam
   }
 }
 
-bool BioZSkipSample = false;
 
 void setup()
 {
   Serial.begin(57600); // Serial begin
-  //SPI.begin();
    
-
-  SPI.begin(10,8,7,20);
-
-  //SPI.
+  SPI.begin(MAX30001_SCK_PIN,MAX30001_MISO_PIN,MAX30001_MOSI_PIN,MAX30001_CS_PIN);
 
   bool ret = max30001.max30001ReadInfo();
   if (ret)
@@ -130,13 +114,11 @@ void setup()
 
   Serial.println("Initialising the chip ...");
   max30001.BeginECGBioZ(); // initialize MAX30001
-                           // max30001.Begin();
 }
 
 void loop()
 {
   ecg_data = max30001.getECGSamples();
-  // max30001.getHRandRR();
   if (BioZSkipSample == false)
   {
     bioz_data = max30001.getBioZSamples();
@@ -149,5 +131,5 @@ void loop()
     sendData(ecg_data, bioz_data, BioZSkipSample);
     BioZSkipSample = false;
   }
-  delay(8);
+  delay(MAX30001_DELAY_SAMPLES);
 }
