@@ -1,33 +1,42 @@
 # ProtoCentral tinyECG MAX30001G ECG & Respiration monitoring module
 
+[![Compile Examples](https://github.com/Protocentral/protocentral_tinyecg_max30001/workflows/Compile%20Examples/badge.svg)](https://github.com/Protocentral/protocentral_tinyecg_max30001/actions?workflow=Compile+Examples)
+
+## Don't have one? [Buy it here](https://protocentral.com/product/protocentral-tinyecg-max30001-ecg-respiration-module-for-qt-py-xiao/)
+
+
 ![tinyECG MAX30001](docs/images/tinyecg.jpg)
 
 ProtoCentral tinyECG MAX30001G ECG & Respiration monitoring module is a tiny module based on the Analog Devices MAX30001 ECG and Respiration sensor. It is a single lead ECG and Respiration sensor with a built-in amplifier, front-end and ADC. It can be used to measure ECG and Respiration signals from the human body. 
 
 The form factor of the module is designed to fit the [Adafruit QT Py](https://www.adafruit.com/category/595) or[Seeed Studio XIAO](https://wiki.seeedstudio.com/Seeeduino-XIAO/) series of microcontroller boards. These boards offers a tiny form factor with a built-in USB port and a battery connector and are based on your choice of a multitude of microcontrollers . Coupled with one of these boards, you can build a tiny wearable ECG and Respiration monitoring device.
 
-## Features and Specifications
-* Analog Devices [MAX30001G ECG and Respiration sensor](https://www.analog.com/en/products/max30001.html)
-* Footprint compatible for add-on board to [Adafruit QT Py](https://www.adafruit.com/category/595) or[Seeed Studio XIAO](https://wiki.seeedstudio.com/Seeeduino-XIAO/)
-* BioZ drive current range from 55nA to 96 uA
-* Ultra-low nosie with 15.9 ENOB for ECG and 17 bits ENOB for Bioimpedance/Respiration
-* High input impedance for use with dry electrodes
-* Onboard 3.3V LDO for power regulation
-* Board comes with castellated pads for easy soldering into your project
-* Breadboard compatible 2.54mm pitch headers for easy connection
+## Hardware Setup
 
-## Repository Contents
+Connection with the Adafruit QT PY ESP32-C3 is as follows:
 
-* /hardware - Hardware design files
+|Tiny ECG pin label| Adafruit QT PY ESP32-C3 Connection   |Pin Function      |
+|----------------- |:--------------------:|-----------------:|
+| MISO             | MISO                  |  Slave out|             
+| MOSI             | MOSI                  |  Slave in           |
+| SCK              | SCK                  |  Serial clock     |
+| CS0              | 6                   |  Slave select|
+| FCLK             | NC                   |  External clock     |
+| INT1             | A0                   |  Interrupt        |
+| INT2             | NC                   |  Interrupt       |
+| Vcc              | +5V             | Power Supply            |
+| GND              | GND                  | GND
 
-## License Information
+# Visualizing Output
 
-This product is open source! Please see the LICENSE.md file for more information.
+![openview output](./docs/images/tinyecg_output.gif)
 
-## Getting Started
-_Getting Started Guide coming soon..._
+## For further details, refer [the documentation on TinyECG module](https://docs.protocentral.com/getting-started-with-tinyECG/)
 
-## License Information
+
+
+License Information
+===================
 
 ![License](license_mark.svg)
 
